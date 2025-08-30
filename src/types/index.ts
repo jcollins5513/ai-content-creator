@@ -40,27 +40,8 @@ export interface ImageCategory {
   isCustom: boolean;
 }
 
-// Content Generation Types
-export interface TemplateQuestion {
-  id: string;
-  question: string;
-  type: 'text' | 'select' | 'textarea';
-  options?: string[];
-  required: boolean;
-}
-
-export interface ContentTemplate {
-  id: string;
-  userId?: string; // null for built-in templates
-  name: string;
-  type: 'built-in' | 'custom';
-  industry: string;
-  description: string;
-  questions: TemplateQuestion[];
-  promptTemplate: string;
-  isActive: boolean;
-  createdAt: Date;
-}
+// Re-export template types
+export * from './templates';
 
 // Canvas and Design Types
 export interface CanvasElement {

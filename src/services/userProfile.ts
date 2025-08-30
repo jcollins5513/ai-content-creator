@@ -23,7 +23,7 @@ export class UserProfileService {
     const newProfile: UserProfile = {
       uid,
       email,
-      displayName,
+      displayName: displayName || undefined,
       customImageCategories: [],
       subscriptionPlan: SUBSCRIPTION_PLANS.FREE,
       createdAt: new Date(),
@@ -36,11 +36,26 @@ export class UserProfileService {
     };
     
     // Save to Firestore with server timestamps
-    await setDoc(userDocRef, {
-      ...newProfile,
+    const firestoreData: Record<string, unknown> = {
+      uid,
+      email,
+      customImageCategories: [],
+      subscriptionPlan: SUBSCRIPTION_PLANS.FREE,
       createdAt: Timestamp.now(),
       lastLoginAt: Timestamp.now(),
-    });
+      usageStats: {
+        contentGenerations: 0,
+        designsCreated: 0,
+        imagesUploaded: 0,
+      },
+    };
+    
+    // Only include displayName if it has a value
+    if (displayName) {
+      firestoreData.displayName = displayName;
+    }
+    
+    await setDoc(userDocRef, firestoreData);
     
     return newProfile;
   }
@@ -78,15 +93,19 @@ export class UserProfileService {
   ): Promise<void> {
     const userDocRef = doc(db, 'users', uid);
     
-    // Convert Date objects to Timestamps for Firestore
-    const firestoreUpdates: Partial<
-      UserProfile & { lastLoginAt?: Timestamp }
-    > = { ...updates };
-    if (updates.lastLoginAt) {
-      firestoreUpdates.lastLoginAt = Timestamp.fromDate(
-        updates.lastLoginAt
-      );
-    }
+    // Convert Date objects to Timestamps for Firestore and filter out undefined values
+    const firestoreUpdates: Record<string, unknown> = {};
+    
+    // Only include defined values
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (key === 'lastLoginAt' && value instanceof Date) {
+          firestoreUpdates[key] = Timestamp.fromDate(value);
+        } else {
+          firestoreUpdates[key] = value;
+        }
+      }
+    });
 
     await updateDoc(userDocRef, firestoreUpdates);
   }

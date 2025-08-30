@@ -73,7 +73,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "metadata.uploadedAt",
+          "fieldPath": "uploadedAt",
           "order": "DESCENDING"
         }
       ]
@@ -87,7 +87,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "metadata.uploadedAt",
+          "fieldPath": "uploadedAt",
           "order": "DESCENDING"
         }
       ]

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { ImageMetadata, ImageCategory } from '@/types';
+import { BackgroundRemovalButton } from '@/components/background-removal';
 
 interface ImageDetailsModalProps {
   image: ImageMetadata | null;
@@ -11,6 +12,7 @@ interface ImageDetailsModalProps {
   onDelete: (imageId: string) => Promise<void>;
   onRename: (imageId: string, newFilename: string) => Promise<void>;
   onMove: (imageId: string, newCategory: string) => Promise<void>;
+  onRemoveBackground?: (image: ImageMetadata) => void;
   availableCategories: ImageCategory[];
 }
 
@@ -21,6 +23,7 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({
   onDelete,
   onRename,
   onMove,
+  onRemoveBackground,
   availableCategories,
 }) => {
   const [isRenaming, setIsRenaming] = useState(false);
@@ -242,7 +245,17 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({
                 <h3 className="text-sm font-medium text-gray-700">Actions</h3>
                 
                 <div className="space-y-2">
+                  {onRemoveBackground && (
+                    <BackgroundRemovalButton
+                      onClick={() => onRemoveBackground(image)}
+                      className="w-full"
+                      size="md"
+                      variant="primary"
+                    />
+                  )}
+                  
                   <button
+                    type="button"
                     onClick={handleDownload}
                     className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   >
@@ -250,6 +263,7 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({
                   </button>
                   
                   <button
+                    type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(image.url);
                       // You might want to show a toast notification here
@@ -260,6 +274,7 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({
                   </button>
                   
                   <button
+                    type="button"
                     onClick={handleDelete}
                     disabled={isDeleting}
                     className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

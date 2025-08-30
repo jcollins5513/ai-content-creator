@@ -10,7 +10,10 @@ import ImageUpload from './ImageUpload';
 import ImageGrid from './ImageGrid';
 import CategoryTabs from './CategoryTabs';
 import ImageDetailsModal from './ImageDetailsModal';
+import { BackgroundRemovalModal } from '@/components/background-removal';
 import { ToastContainer } from '@/components/ui/Toast';
+import { uploadImageToStorage } from '@/services/imageService';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ImageLibraryProps {
   onImageSelect?: (image: ImageMetadata) => void;
@@ -38,6 +41,7 @@ export const ImageLibrary: React.FC<ImageLibraryProps> = ({
   
   const { categories } = useImageCategories();
   const { toasts, showToast, removeToast } = useToast();
+  const { user } = useAuth();
   
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [categoryImages, setCategoryImages] = useState<ImageMetadata[]>([]);
@@ -45,6 +49,8 @@ export const ImageLibrary: React.FC<ImageLibraryProps> = ({
   const [showUpload, setShowUpload] = useState(false);
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<ImageMetadata | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedImageForBgRemoval, setSelectedImageForBgRemoval] = useState<ImageMetadata | null>(null);
+  const [showBgRemovalModal, setShowBgRemovalModal] = useState(false);
 
   // Combine default and custom categories
   const allCategories: ImageCategory[] = [
@@ -194,6 +200,45 @@ export const ImageLibrary: React.FC<ImageLibraryProps> = ({
     setSelectedImageForDetails(null);
   };
 
+  const handleRemoveBackground = (image: ImageMetadata) => {
+    setSelectedImageForBgRemoval(image);
+    setShowBgRemovalModal(true);
+    // Close details modal if open
+    setShowDetailsModal(false);
+    setSelectedImageForDetails(null);
+  };
+
+  const handleCloseBgRemoval = () => {
+    setShowBgRemovalModal(false);
+    setSelectedImageForBgRemoval(null);
+  };
+
+  const handleSaveProcessedImage = async (processedFile: File, originalImage: ImageMetadata) => {
+    if (!user) {
+      throw new Error('User must be authenticated to save images');
+    }
+
+    try {
+      // Upload the processed image to storage
+      const uploadedImage = await uploadImageToStorage(processedFile, originalImage.category, user.uid);
+      
+      // Add to the current view
+      setCategoryImages(prev => [uploadedImage, ...prev]);
+      
+      // Refresh the main images list
+      refreshImages();
+      
+      showToast({
+        type: 'success',
+        title: 'Background removed successfully',
+        message: `${processedFile.name} has been saved to your library.`,
+      });
+    } catch (error) {
+      console.error('Error saving processed image:', error);
+      throw error; // Re-throw to let the modal handle the error display
+    }
+  };
+
   const getUploadCategory = (): string => {
     // If we're viewing 'all', default to the first default category
     if (activeCategory === 'all') {
@@ -293,7 +338,16 @@ export const ImageLibrary: React.FC<ImageLibraryProps> = ({
         onDelete={handleImageDelete}
         onRename={handleImageRename}
         onMove={handleImageMove}
+        onRemoveBackground={handleRemoveBackground}
         availableCategories={allCategories.filter(cat => cat.id !== 'all')}
+      />
+
+      {/* Background Removal Modal */}
+      <BackgroundRemovalModal
+        isOpen={showBgRemovalModal}
+        onClose={handleCloseBgRemoval}
+        selectedImage={selectedImageForBgRemoval}
+        onSaveProcessedImage={handleSaveProcessedImage}
       />
 
       {/* Toast Notifications */}

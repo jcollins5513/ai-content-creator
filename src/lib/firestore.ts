@@ -61,8 +61,9 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
     return {
       id: userDoc.id,
       ...data,
-      createdAt: data.createdAt?.toDate?.() ?? data.createdAt,
-      lastLoginAt: data.lastLoginAt?.toDate?.() ?? data.lastLoginAt,
+      // Keep Timestamps as they are, don't convert to Date
+      createdAt: data.createdAt,
+      lastLoginAt: data.lastLoginAt,
     } as UserProfile;
   }
   
@@ -92,7 +93,10 @@ export const getBuiltInTemplates = async (): Promise<ContentTemplate[]> => {
   );
   
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return { ...data, id: doc.id } as ContentTemplate;
+  });
 };
 
 export const getUserCustomTemplates = async (userId: string): Promise<ContentTemplate[]> => {
@@ -104,7 +108,10 @@ export const getUserCustomTemplates = async (userId: string): Promise<ContentTem
   );
   
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return { ...data, id: doc.id } as ContentTemplate;
+  });
 };
 
 export const createCustomTemplate = async (userId: string, template: Omit<ContentTemplate, 'id' | 'userId' | 'createdAt'>): Promise<string> => {
@@ -144,18 +151,7 @@ export const getUserDesigns = async (userId: string, limitCount?: number): Promi
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => {
     const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      metadata: {
-        ...data.metadata,
-        createdAt:
-          data.metadata?.createdAt?.toDate?.() ?? data.metadata?.createdAt,
-        updatedAt:
-          data.metadata?.updatedAt?.toDate?.() ?? data.metadata?.updatedAt,
-        version: data.metadata?.version,
-      },
-    } as DesignProject;
+    return { ...data, id: doc.id } as DesignProject;
   });
 };
 
@@ -164,7 +160,8 @@ export const getDesignById = async (designId: string): Promise<DesignProject | n
   const designDoc = await getDoc(designDocRef);
   
   if (designDoc.exists()) {
-    return { id: designDoc.id, ...designDoc.data() } as DesignProject;
+    const data = designDoc.data();
+    return { ...data, id: designDoc.id } as DesignProject;
   }
   
   return null;
@@ -222,7 +219,10 @@ export const getUserImages = async (userId: string, category?: string): Promise<
   
   const q = query(imagesCollection, ...constraints);
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return { ...data, id: doc.id } as ImageMetadata;
+  });
 };
 
 export const saveImageMetadata = async (userId: string, imageData: Omit<ImageMetadata, 'id' | 'userId'>): Promise<string> => {

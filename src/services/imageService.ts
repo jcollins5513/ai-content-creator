@@ -13,7 +13,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { deleteStorageFile } from '@/lib/storage';
+import { deleteStorageFile, uploadUserImage, getFileDownloadURL } from '@/lib/storage';
 import { ImageMetadata } from '@/types';
 
 // Collection name
@@ -289,5 +289,109 @@ export const batchMoveImages = async (
   } catch (error) {
     console.error('Error batch moving images:', error);
     throw new Error('Failed to move images');
+  }
+};
+
+// Upload image to storage and create metadata
+export const uploadImageToStorage = async (
+  file: File,
+  category: string,
+  userId?: string
+): Promise<ImageMetadata> => {
+  if (!userId) {
+    throw new Error('User ID is required for image upload');
+  }
+
+  try {
+    // Get image dimensions
+    const dimensions = await getImageDimensions(file);
+    
+    // Upload to storage
+    const { url, filename, storagePath } = await uploadUserImage(userId, category, file);
+    
+    // Create metadata in Firestore
+    const imageData: Omit<ImageMetadata, 'id'> = {
+      url,
+      filename,
+      category,
+      uploadedAt: new Date(),
+      size: file.size,
+      dimensions,
+      storagePath,
+    };
+    
+    const imageMetadata = await createImageMetadata(userId, imageData);
+    return imageMetadata;
+  } catch (error) {
+    console.error('Error uploading image to storage:', error);
+    throw new Error('Failed to upload image');
+  }
+};
+
+// Helper function to get image dimensions
+const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Failed to load image for dimension calculation'));
+    };
+    
+    img.src = url;
+  });
+};
+
+// Refresh download URL for an image (useful for CORS issues)
+export const refreshImageDownloadURL = async (imageId: string): Promise<string> => {
+  try {
+    const image = await getImageById(imageId);
+    if (!image) {
+      throw new Error('Image not found');
+    }
+
+    // Generate a fresh download URL using the storage path
+    const freshUrl = await getFileDownloadURL(image.storagePath);
+    
+    // Update the image document with the new URL
+    const imageRef = doc(db, IMAGES_COLLECTION, imageId);
+    await updateDoc(imageRef, {
+      url: freshUrl,
+      updatedAt: serverTimestamp(),
+    });
+
+    return freshUrl;
+  } catch (error) {
+    console.error('Error refreshing image download URL:', error);
+    throw new Error('Failed to refresh download URL');
+  }
+};
+
+// Get image with fresh download URL (handles CORS issues)
+export const getImageWithFreshURL = async (imageId: string): Promise<ImageMetadata | null> => {
+  try {
+    const image = await getImageById(imageId);
+    if (!image) return null;
+
+    // Try to get a fresh download URL
+    try {
+      const freshUrl = await getFileDownloadURL(image.storagePath);
+      return {
+        ...image,
+        url: freshUrl,
+      };
+    } catch (urlError) {
+      console.warn('Could not refresh URL, using stored URL:', urlError);
+      return image;
+    }
+  } catch (error) {
+    console.error('Error getting image with fresh URL:', error);
+    return null;
   }
 };

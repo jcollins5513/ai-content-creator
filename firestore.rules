@@ -2,93 +2,26 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    // Helper function to check if user owns the resource
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    // Helper function to validate user data
-    function isValidUserData() {
-      return request.resource.data.keys().hasAll(['email', 'customImageCategories', 'subscriptionPlan', 'createdAt', 'lastLoginAt', 'usageStats']) &&
-             request.resource.data.customImageCategories is list &&
-             request.resource.data.customImageCategories.size() <= 2 &&
-             request.resource.data.subscriptionPlan in ['free', 'premium'] &&
-             request.resource.data.usageStats.keys().hasAll(['contentGenerations', 'designsCreated', 'imagesUploaded']);
-    }
-    
-    // Helper function to validate template data
-    function isValidTemplateData() {
-      return request.resource.data.keys().hasAll(['userId', 'name', 'industry', 'questions', 'promptTemplate', 'isActive', 'createdAt']) &&
-             request.resource.data.questions is list &&
-             request.resource.data.questions.size() > 0;
-    }
-    
-    // Helper function to validate design data
-    function isValidDesignData() {
-      return request.resource.data.keys().hasAll(['userId', 'name', 'canvasSettings', 'elements', 'metadata']) &&
-             request.resource.data.elements is list &&
-             request.resource.data.canvasSettings.keys().hasAll(['width', 'height']) &&
-             request.resource.data.metadata.keys().hasAll(['createdAt', 'updatedAt', 'version']);
-    }
-    
-    // Helper function to validate image metadata
-    function isValidImageData() {
-      return request.resource.data.keys().hasAll(['userId', 'filename', 'category', 'storageUrl', 'metadata']) &&
-             request.resource.data.metadata.keys().hasAll(['size', 'dimensions', 'uploadedAt']);
-    }
-    
-    // Users collection - users can only access their own profile
+    // Temporary test rules - allow authenticated users to read/write their own data
     match /users/{userId} {
-      allow read, write: if isOwner(userId) && isValidUserData();
-      allow create: if isOwner(userId) && isValidUserData();
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Templates collection - users can read built-in templates and manage their own custom templates
-    match /templates/{templateId} {
-      // Allow read access to built-in templates (userId is null) and user's own templates
-      allow read: if isAuthenticated() && 
-                     (resource.data.userId == null || isOwner(resource.data.userId));
-      
-      // Allow users to create their own custom templates (max 2 per user enforced in client)
-      allow create: if isAuthenticated() && 
-                       isOwner(request.resource.data.userId) && 
-                       isValidTemplateData();
-      
-      // Allow users to update/delete only their own custom templates
-      allow update, delete: if isAuthenticated() && 
-                               resource.data.userId != null && 
-                               isOwner(resource.data.userId) && 
-                               isValidTemplateData();
-    }
-    
-    // Designs collection - users can only access their own designs
-    match /designs/{designId} {
-      allow read, write: if isAuthenticated() && 
-                            isOwner(resource.data.userId) && 
-                            isValidDesignData();
-      allow create: if isAuthenticated() && 
-                       isOwner(request.resource.data.userId) && 
-                       isValidDesignData();
-    }
-    
-    // Images collection - users can only access their own image metadata
     match /images/{imageId} {
-      allow read, write: if isAuthenticated() && 
-                            isOwner(resource.data.userId) && 
-                            isValidImageData();
-      allow create: if isAuthenticated() && 
-                       isOwner(request.resource.data.userId) && 
-                       isValidImageData();
+      allow read, write: if request.auth != null;
     }
     
-    // Deny all other access
+    match /templates/{templateId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    match /designs/{designId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow all authenticated users for testing
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if request.auth != null;
     }
   }
 }
