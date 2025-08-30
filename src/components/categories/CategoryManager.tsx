@@ -32,7 +32,7 @@ export function CategoryManager({ onCategoryChange }: CategoryManagerProps) {
       await addCustomCategory(newCategoryName);
       setNewCategoryName('');
       onCategoryChange?.();
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     } finally {
       setIsSubmitting(false);
@@ -48,7 +48,7 @@ export function CategoryManager({ onCategoryChange }: CategoryManagerProps) {
       setIsSubmitting(true);
       await removeCustomCategory(categoryName);
       onCategoryChange?.();
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     } finally {
       setIsSubmitting(false);
@@ -69,7 +69,7 @@ export function CategoryManager({ onCategoryChange }: CategoryManagerProps) {
       setEditingCategory(null);
       setEditingName('');
       onCategoryChange?.();
-    } catch (err) {
+    } catch {
       // Error is handled by the hook
     } finally {
       setIsSubmitting(false);

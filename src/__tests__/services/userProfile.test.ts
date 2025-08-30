@@ -1,5 +1,5 @@
 import { UserProfileService } from '@/services/userProfile'
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { SUBSCRIPTION_PLANS, FREE_TIER_LIMITS } from '@/types/firestore'
 
 // Mock Firebase functions

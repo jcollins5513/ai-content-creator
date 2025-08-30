@@ -6,7 +6,7 @@ import {
   saveDesign,
   incrementUsageStats,
 } from '@/lib/firestore'
-import { doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy, Timestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc, getDocs, query, where, orderBy } from 'firebase/firestore'
 
 // Mock Firebase functions
 jest.mock('firebase/firestore')

@@ -6,9 +6,7 @@ import {
   deleteObject,
   listAll,
   getMetadata,
-  UploadResult,
   StorageReference,
-  UploadTask,
 } from 'firebase/storage';
 import { storage } from './firebase';
 

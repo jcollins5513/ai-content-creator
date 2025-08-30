@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { ImageMetadata, ImageCategory } from '@/types';
 
 interface ImageCardProps {
@@ -217,7 +218,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({
       {/* Image Container */}
       <div
         className={`
-          aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer transition-all
+          relative aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer transition-all
           ${selected ? 'ring-2 ring-blue-500 ring-offset-2' : 'hover:shadow-md'}
           ${multiSelect ? '' : 'hover:scale-105'}
         `}
@@ -230,10 +231,11 @@ export const ImageCard: React.FC<ImageCardProps> = ({
                 <div className="animate-pulse bg-gray-200 w-full h-full"></div>
               </div>
             )}
-            <img
+            <Image
               src={image.url}
               alt={image.filename}
-              className={`w-full h-full object-cover transition-opacity ${
+              fill
+              className={`object-cover transition-opacity ${
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               onLoad={() => setImageLoaded(true)}

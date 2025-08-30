@@ -74,7 +74,7 @@ describe('useUserProfile', () => {
     await act(async () => {
       try {
         await result.current.updateProfile({ displayName: 'New Name' })
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
     })

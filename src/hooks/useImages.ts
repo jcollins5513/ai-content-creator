@@ -86,7 +86,7 @@ export const useImages = (): UseImagesReturn => {
       console.error('Error deleting image:', err);
       throw err; // Re-throw to allow component to handle
     }
-  }, [user]);
+  }, [user, refreshStorageUsage, refreshCategoryCount]);
 
   const renameImage = useCallback(async (imageId: string, newFilename: string) => {
     if (!user) return;
@@ -122,7 +122,7 @@ export const useImages = (): UseImagesReturn => {
       console.error('Error moving image:', err);
       throw err;
     }
-  }, [user]);
+  }, [user, refreshCategoryCount]);
 
   const refreshStorageUsage = useCallback(async () => {
     if (!user) {

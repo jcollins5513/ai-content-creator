@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { ImageMetadata, ImageCategory } from '@/types';
 
 interface ImageDetailsModalProps {
@@ -131,9 +132,11 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({
           {/* Image Preview */}
           <div className="flex-1 bg-gray-50 flex items-center justify-center p-4">
             <div className="max-w-full max-h-full">
-              <img
+              <Image
                 src={image.url}
                 alt={image.filename}
+                width={image.dimensions.width}
+                height={image.dimensions.height}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
               />
             </div>
