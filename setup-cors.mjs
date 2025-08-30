@@ -1,7 +1,7 @@
 // Script to set up CORS for Firebase Storage
 // This needs to be run with proper Google Cloud SDK authentication
 
-const { Storage } = require('@google-cloud/storage');
+import { Storage } from '@google-cloud/storage';
 
 async function setupCORS() {
   const storage = new Storage({
@@ -29,3 +29,4 @@ async function setupCORS() {
 }
 
 setupCORS();
+

@@ -29,7 +29,7 @@ export interface GenerationWizardStep {
   id: string;
   title: string;
   description: string;
-  component: React.ComponentType<any>;
+  component: React.ComponentType<unknown>;
 }
 
 export interface AssetGenerationRequest {
