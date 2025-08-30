@@ -63,7 +63,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     });
   };
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     if (!user) {
       onUploadError('User not authenticated');
       return;
@@ -161,12 +161,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         });
       }, 5000);
     }
-  };
+  }, [user, category, onUploadComplete, onUploadError]);
 
   const handleFiles = useCallback((files: FileList | File[]) => {
     const fileArray = Array.from(files);
     fileArray.forEach(uploadFile);
-  }, [category, user]);
+  }, [uploadFile]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();

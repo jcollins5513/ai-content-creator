@@ -1,35 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Define protected routes that require authentication
-const protectedRoutes = [
-  '/dashboard',
-  '/editor',
-  '/images',
-  '/templates',
-  '/designs',
-  '/profile'
-];
-
-// Define public routes that should redirect authenticated users
-const publicRoutes = [
-  '/auth',
-  '/login',
-  '/signup'
-];
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Check if the current path is a protected route
-  const isProtectedRoute = protectedRoutes.some(route => 
-    pathname.startsWith(route)
-  );
-  
-  // Check if the current path is a public route
-  const isPublicRoute = publicRoutes.some(route => 
-    pathname.startsWith(route)
-  );
 
   // For now, we'll handle authentication checks on the client side
   // since Firebase Auth state is not available in middleware
