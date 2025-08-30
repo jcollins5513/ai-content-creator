@@ -36,6 +36,35 @@ export const useImages = (): UseImagesReturn => {
   const [storageUsage, setStorageUsage] = useState(0);
   const [categoryCount, setCategoryCount] = useState<Record<string, number>>({});
 
+  // Define utility functions first
+  const refreshStorageUsage = useCallback(async () => {
+    if (!user) {
+      setStorageUsage(0);
+      return;
+    }
+
+    try {
+      const usage = await getUserStorageUsage(user.uid);
+      setStorageUsage(usage);
+    } catch (err) {
+      console.error('Error fetching storage usage:', err);
+    }
+  }, [user]);
+
+  const refreshCategoryCount = useCallback(async () => {
+    if (!user) {
+      setCategoryCount({});
+      return;
+    }
+
+    try {
+      const counts = await getImageCountByCategory(user.uid);
+      setCategoryCount(counts);
+    } catch (err) {
+      console.error('Error fetching category counts:', err);
+    }
+  }, [user]);
+
   const refreshImages = useCallback(async () => {
     if (!user) {
       setImages([]);
@@ -123,34 +152,6 @@ export const useImages = (): UseImagesReturn => {
       throw err;
     }
   }, [user, refreshCategoryCount]);
-
-  const refreshStorageUsage = useCallback(async () => {
-    if (!user) {
-      setStorageUsage(0);
-      return;
-    }
-
-    try {
-      const usage = await getUserStorageUsage(user.uid);
-      setStorageUsage(usage);
-    } catch (err) {
-      console.error('Error fetching storage usage:', err);
-    }
-  }, [user]);
-
-  const refreshCategoryCount = useCallback(async () => {
-    if (!user) {
-      setCategoryCount({});
-      return;
-    }
-
-    try {
-      const counts = await getImageCountByCategory(user.uid);
-      setCategoryCount(counts);
-    } catch (err) {
-      console.error('Error fetching category counts:', err);
-    }
-  }, [user]);
 
   // Load images when user changes
   useEffect(() => {

@@ -2,9 +2,12 @@
 
 import { ProtectedRoute, UserProfile } from '@/components/auth';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
 
   return (
     <ProtectedRoute>
@@ -13,10 +16,30 @@ export default function DashboardPage() {
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-semibold text-gray-900">
+              <div className="flex items-center space-x-8">
+                <Link href="/dashboard" className="text-xl font-semibold text-gray-900">
                   AI Content Creator
-                </h1>
+                </Link>
+                <nav className="hidden md:flex space-x-6">
+                  <Link 
+                    href="/dashboard" 
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link 
+                    href="/template-generator" 
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Template Generator
+                  </Link>
+                  <Link 
+                    href="/test-images" 
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Image Library
+                  </Link>
+                </nav>
               </div>
               <UserProfile />
             </div>
@@ -44,12 +67,12 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Create New Design</h3>
               <p className="text-gray-600 mb-4">Start with a blank canvas or use AI-generated content.</p>
-              <button 
-                type="button"
+              <Link 
+                href="/template-generator"
                 className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
               >
                 Get Started →
-              </button>
+              </Link>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
@@ -60,12 +83,12 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Images</h3>
               <p className="text-gray-600 mb-4">Upload, organize, and edit your image library.</p>
-              <button 
-                type="button"
+              <Link 
+                href="/test-images"
                 className="text-green-600 hover:text-green-800 font-medium transition-colors"
               >
                 View Library →
-              </button>
+              </Link>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
@@ -76,12 +99,12 @@ export default function DashboardPage() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Content Templates</h3>
               <p className="text-gray-600 mb-4">Use AI-powered templates to generate content.</p>
-              <button 
-                type="button"
+              <Link 
+                href="/template-generator"
                 className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
               >
                 Browse Templates →
-              </button>
+              </Link>
             </div>
           </div>
 

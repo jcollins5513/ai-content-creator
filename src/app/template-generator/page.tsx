@@ -6,6 +6,7 @@ import { TemplateWizard } from '@/components/content-generation';
 import { TemplateAnswers, GeneratedAsset } from '@/types/templates';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/components/ui/Toast';
+import Link from 'next/link';
 
 export default function TemplateGeneratorPage() {
   const [showWizard, setShowWizard] = useState(false);
@@ -33,12 +34,42 @@ export default function TemplateGeneratorPage() {
   if (showWizard) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 py-8">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <TemplateWizard
-              onComplete={handleTemplateComplete}
-              onCancel={handleCancel}
-            />
+        <div className="min-h-screen bg-gray-50">
+          {/* Navigation Header */}
+          <header className="bg-white shadow-sm border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center h-16">
+                <div className="flex items-center space-x-8">
+                  <Link href="/dashboard" className="text-xl font-semibold text-gray-900">
+                    AI Content Creator
+                  </Link>
+                  <nav className="hidden md:flex space-x-6">
+                    <Link 
+                      href="/dashboard" 
+                      className="text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <span className="text-blue-600 font-medium">Template Generator</span>
+                    <Link 
+                      href="/test-images" 
+                      className="text-gray-600 hover:text-gray-900 transition-colors"
+                    >
+                      Image Library
+                    </Link>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <div className="py-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <TemplateWizard
+                onComplete={handleTemplateComplete}
+                onCancel={handleCancel}
+              />
+            </div>
           </div>
         </div>
         <ToastContainer toasts={toasts} onRemove={removeToast} />
@@ -49,6 +80,34 @@ export default function TemplateGeneratorPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
+        {/* Navigation Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-8">
+                <Link href="/dashboard" className="text-xl font-semibold text-gray-900">
+                  AI Content Creator
+                </Link>
+                <nav className="hidden md:flex space-x-6">
+                  <Link 
+                    href="/dashboard" 
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <span className="text-blue-600 font-medium">Template Generator</span>
+                  <Link 
+                    href="/test-images" 
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Image Library
+                  </Link>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </header>
+
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
