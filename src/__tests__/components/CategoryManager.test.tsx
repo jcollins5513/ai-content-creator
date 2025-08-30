@@ -42,9 +42,9 @@ describe('CategoryManager', () => {
       loading: true,
     })
 
-    render(<CategoryManager />)
+      const { container } = render(<CategoryManager />)
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+      expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('should render categories list', () => {

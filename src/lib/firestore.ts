@@ -58,7 +58,13 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   const userDoc = await getDoc(userDocRef);
   
   if (userDoc.exists()) {
-    return { id: userDoc.id, ...userDoc.data() } as UserProfile;
+    const data = userDoc.data();
+    return {
+      id: userDoc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate?.() ?? data.createdAt,
+      lastLoginAt: data.lastLoginAt?.toDate?.() ?? data.lastLoginAt,
+    } as UserProfile;
   }
   
   return null;
@@ -137,7 +143,21 @@ export const getUserDesigns = async (userId: string, limitCount?: number): Promi
   
   const q = query(designsCollection, ...constraints);
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      metadata: {
+        ...data.metadata,
+        createdAt:
+          data.metadata?.createdAt?.toDate?.() ?? data.metadata?.createdAt,
+        updatedAt:
+          data.metadata?.updatedAt?.toDate?.() ?? data.metadata?.updatedAt,
+        version: data.metadata?.version,
+      },
+    } as DesignProject;
+  });
 };
 
 export const getDesignById = async (designId: string): Promise<DesignProject | null> => {

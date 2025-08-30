@@ -223,22 +223,26 @@ describe('ImageCategoriesService', () => {
     it('should validate invalid characters', () => {
       const result = ImageCategoriesService.validateCategoryName('Invalid@Name!')
 
-      expect(result.isValid).toBe(false)
-      expect(result.errors).toContain(/can only contain letters, numbers/)
+        expect(result.isValid).toBe(false)
+        expect(
+          result.errors.some(e => /can only contain letters, numbers/.test(e))
+        ).toBe(true)
     })
 
     it('should detect default category conflicts', () => {
       const result = ImageCategoriesService.validateCategoryName('Backgrounds')
 
-      expect(result.isValid).toBe(false)
-      expect(result.errors).toContain(/is a default category name/)
+        expect(result.isValid).toBe(false)
+        expect(
+          result.errors.some(e => /is a default category name/.test(e))
+        ).toBe(true)
     })
 
     it('should detect existing custom category conflicts', () => {
       const result = ImageCategoriesService.validateCategoryName('Existing', ['Existing'])
 
-      expect(result.isValid).toBe(false)
-      expect(result.errors).toContain('already exists')
+        expect(result.isValid).toBe(false)
+        expect(result.errors).toContain('Category "Existing" already exists')
     })
 
     it('should pass validation for valid names', () => {
