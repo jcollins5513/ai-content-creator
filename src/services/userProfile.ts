@@ -79,11 +79,15 @@ export class UserProfileService {
     const userDocRef = doc(db, 'users', uid);
     
     // Convert Date objects to Timestamps for Firestore
-    const firestoreUpdates: any = { ...updates };
+    const firestoreUpdates: Partial<
+      UserProfile & { lastLoginAt?: Timestamp }
+    > = { ...updates };
     if (updates.lastLoginAt) {
-      firestoreUpdates.lastLoginAt = Timestamp.fromDate(updates.lastLoginAt);
+      firestoreUpdates.lastLoginAt = Timestamp.fromDate(
+        updates.lastLoginAt
+      );
     }
-    
+
     await updateDoc(userDocRef, firestoreUpdates);
   }
   
@@ -231,9 +235,11 @@ export class UserProfileService {
       }
       
       // Check for conflicts with default categories
-      const conflicts = data.customImageCategories.filter(cat => 
-        DEFAULT_IMAGE_CATEGORIES.includes(cat as any)
-      );
+        const conflicts = data.customImageCategories.filter(cat =>
+          DEFAULT_IMAGE_CATEGORIES.includes(
+            cat as (typeof DEFAULT_IMAGE_CATEGORIES)[number]
+          )
+        );
       if (conflicts.length > 0) {
         errors.push(`Custom categories cannot use default names: ${conflicts.join(', ')}`);
       }

@@ -16,6 +16,10 @@ const mockUserProfileService = UserProfileService as jest.Mocked<typeof UserProf
 describe('useUserProfile', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockUserProfileService.validateProfileData.mockReturnValue({
+      isValid: true,
+      errors: [],
+    })
   })
 
   it('should initialize with user from auth context', () => {

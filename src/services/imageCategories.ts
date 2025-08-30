@@ -184,7 +184,9 @@ export class ImageCategoriesService {
     }
     
     // Check if conflicts with default categories
-    if (DEFAULT_IMAGE_CATEGORIES.includes(trimmedName as any)) {
+    if (DEFAULT_IMAGE_CATEGORIES.includes(
+      trimmedName as (typeof DEFAULT_IMAGE_CATEGORIES)[number]
+    )) {
       errors.push(`"${trimmedName}" is a default category name and cannot be used as a custom category`);
     }
     

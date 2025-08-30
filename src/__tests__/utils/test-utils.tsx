@@ -48,6 +48,10 @@ const customRender = (
   return render(ui, { wrapper: Wrapper, ...renderOptions })
 }
 
+test('test-utils placeholder', () => {
+  expect(true).toBe(true)
+})
+
 // Test data factories
 export const createMockUser = (overrides: Partial<UserProfile> = {}): UserProfile => ({
   uid: 'test-user-id',

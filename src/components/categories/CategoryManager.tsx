@@ -219,8 +219,8 @@ export function CategoryManager({ onCategoryChange }: CategoryManagerProps) {
 
       {!stats?.canAddMore && stats?.remainingSlots === 0 && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-          <p className="text-sm text-yellow-800">
-            You've reached the maximum number of custom categories for your plan. 
+            <p className="text-sm text-yellow-800">
+              You&apos;ve reached the maximum number of custom categories for your plan.
             <button className="ml-1 text-yellow-900 underline hover:no-underline">
               Upgrade to Premium
             </button> for unlimited categories.
