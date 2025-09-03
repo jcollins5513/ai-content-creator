@@ -108,7 +108,12 @@ export const useTemplateGeneration = () => {
               prompt: prompts[assetType],
               style: style,
               createdAt: new Date(),
-              metadata: data.metadata
+              sequenceIndex: i,
+              generationAttempt: 1,
+              metadata: {
+                ...data.metadata,
+                generationTime: Date.now()
+              }
             };
 
             assets.push(asset);

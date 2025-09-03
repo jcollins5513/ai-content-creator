@@ -29,7 +29,8 @@ export interface GenerationWizardStep {
   id: string;
   title: string;
   description: string;
-  component: React.ComponentType<unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  component: React.ComponentType<any>;
 }
 
 export interface AssetGenerationRequest {
@@ -38,6 +39,8 @@ export interface AssetGenerationRequest {
   style: string;
   colorPalette: string[];
   industry: string;
+  sequenceIndex?: number;
+  previousAssets?: GeneratedAsset[];
 }
 
 export interface GeneratedAsset {
@@ -47,11 +50,55 @@ export interface GeneratedAsset {
   prompt: string;
   style: string;
   createdAt: Date;
+  sequenceIndex: number;
+  generationAttempt: number;
   metadata: {
     width: number;
     height: number;
     format: string;
+    generationTime: number;
   };
+}
+
+export interface AssetGenerationProgress {
+  currentStep: number;
+  totalSteps: number;
+  currentAssetType: string;
+  status: 'idle' | 'generating' | 'completed' | 'failed';
+  completedAssets: GeneratedAsset[];
+  failedAssets: string[];
+  estimatedTimeRemaining?: number;
+}
+
+export interface AssetGenerationPipeline {
+  sessionId: string;
+  steps: AssetGenerationStep[];
+  progress: AssetGenerationProgress;
+  coordinationRules: StyleCoordinationRules;
+}
+
+export interface AssetGenerationStep {
+  id: string;
+  type: AssetGenerationRequest['type'];
+  name: string;
+  description: string;
+  status: 'pending' | 'generating' | 'completed' | 'failed' | 'skipped';
+  prompt: string;
+  customPrompt?: string;
+  asset?: GeneratedAsset;
+  attempts: number;
+  maxAttempts: number;
+  dependencies: string[];
+  estimatedDuration: number;
+  sequenceIndex: number;
+}
+
+export interface StyleCoordinationRules {
+  colorConsistency: boolean;
+  styleConsistency: boolean;
+  industryAlignment: boolean;
+  visualHarmony: boolean;
+  sequentialDependencies: Record<string, string[]>;
 }
 
 export interface TemplateGenerationSession {
